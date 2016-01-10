@@ -1,67 +1,100 @@
----
-title: "Reproducible Research: Peer Assessment 1"
-output: 
-  html_document:
-    keep_md: true
----
+# Reproducible Research: Peer Assessment 1
 
 
 ## Loading and preprocessing the data
 
-```{r,echo = TRUE}
+
+```r
 activity<-read.csv("activity.csv")
 summary(activity)
+```
+
+```
+##      steps                date          interval     
+##  Min.   :  0.00   2012-10-01:  288   Min.   :   0.0  
+##  1st Qu.:  0.00   2012-10-02:  288   1st Qu.: 588.8  
+##  Median :  0.00   2012-10-03:  288   Median :1177.5  
+##  Mean   : 37.38   2012-10-04:  288   Mean   :1177.5  
+##  3rd Qu.: 12.00   2012-10-05:  288   3rd Qu.:1766.2  
+##  Max.   :806.00   2012-10-06:  288   Max.   :2355.0  
+##  NA's   :2304     (Other)   :15840
 ```
 
 
 ## What is mean total number of steps taken per day?
 
-```{r, echo=TRUE,warning = FALSE}
 
+```r
 library(ggplot2)
 stepsperday<-split(activity[[1]],activity[[2]])
 totperday<-sapply(stepsperday,sum)
 data<-data.frame(totperday)
 hist<-ggplot(data,aes(totperday))
 hist+geom_histogram(binwidth = 1000,na.rm = TRUE)+xlab("Total Steps per day")+ylab("Frequency")+ggtitle("Histogram of total steps taken per day")
+```
 
+![](PA1_template_files/figure-html/unnamed-chunk-2-1.png) 
+
+```r
 # The mean total number of steps taken per day :- 
 mean(totperday,na.rm = TRUE)
+```
 
+```
+## [1] 10766.19
+```
+
+```r
 # The median total number of steps taken per day is :-
 
 median(totperday,na.rm = TRUE)
+```
 
+```
+## [1] 10765
 ```
 
 
 
 ## What is the average daily activity pattern?
 
-```{r, echo=TRUE,warning = FALSE}
+
+```r
 library(ggplot2)
 stepsperinterval<-split(activity[[1]],activity[[3]])
 avgstepsperinterval<-sapply(stepsperinterval,mean,na.rm=TRUE)
 data<-data.frame(interval=unique(activity[[3]]),avgstepsperinterval)
 plot<-ggplot(data,aes(interval,avgstepsperinterval))
 plot+ geom_line()+xlab("5-minute Intervals")+ylab("Average Number of Steps")+ggtitle("Daily Activity Pattern")
+```
 
+![](PA1_template_files/figure-html/unnamed-chunk-3-1.png) 
+
+```r
 # 5-minute Interval with maximum average number of steps :-
   
 avgstepsperinterval[[which.max(avgstepsperinterval)[[1]]]]
+```
 
-
+```
+## [1] 206.1698
 ```
 
 ## Imputing missing values
 
-```{r, echo=TRUE,warning = FALSE}
 
+```r
 library(ggplot2)
 # Total number of rows with missing values
 
 sum(is.na(activity[[1]]))
+```
 
+```
+## [1] 2304
+```
+
+```r
 # Making a new dataset by filling in the missing values based on the average number of steps taken in that Interval, averaged over all the days.
 steps<-numeric()
 for(i in 1:nrow(activity))
@@ -74,14 +107,27 @@ totperday<-sapply(stepsperday,sum)
 data<-data.frame(totperday)
 hist<-ggplot(data,aes(totperday))
 hist+geom_histogram(binwidth = 1000,na.rm = TRUE)+xlab("Total Steps per day")+ylab("Frequency")+ggtitle("Histogram of total steps taken per day")
+```
 
+![](PA1_template_files/figure-html/unnamed-chunk-4-1.png) 
+
+```r
 # The mean total number of steps taken per day :- 
 mean(totperday,na.rm = TRUE)
+```
 
+```
+## [1] 10765.64
+```
+
+```r
 # The median total number of steps taken per day is :-
 
 median(totperday,na.rm = TRUE)
+```
 
+```
+## [1] 10762
 ```
 <br>
 <br>
@@ -94,7 +140,8 @@ median(totperday,na.rm = TRUE)
 
 ## Are there differences in activity patterns between weekdays and weekends?
 
-```{r,echo = TRUE}
+
+```r
 day<-weekdays(as.POSIXlt(new_activity[[2]]))
 daytype<-ifelse(day!="Saturday" & day!="Sunday","Weekday","Weekend")
 new_activity_dtype<-data.frame(new_activity,daytype)
@@ -109,8 +156,6 @@ dataweekend<-data.frame(interval=unique(new_activity_dtype[[3]]),avgstepsperinte
 data<-rbind(dataweekday,dataweekend)
 plot<-ggplot(data,aes(interval,avgstepsperinterval))
 plot+ geom_line()+facet_grid(.~daytype)+xlab("5-minute Intervals")+ylab("Average Number of Steps")+ggtitle("Daily Activity Pattern")
-
-
-
-
 ```
+
+![](PA1_template_files/figure-html/unnamed-chunk-5-1.png) 
